@@ -1,4 +1,4 @@
-package ex1;
+package assignment1.ex1;
 
 import java.lang.Thread;
 import java.util.ArrayList;

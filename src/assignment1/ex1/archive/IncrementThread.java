@@ -1,4 +1,4 @@
-package ex1.archive;
+package assignment1.ex1.archive;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

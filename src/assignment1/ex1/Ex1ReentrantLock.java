@@ -1,24 +1,29 @@
-package ex1;
+package assignment1.ex1;
 
 import java.lang.Thread;
 import java.util.ArrayList;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author dwettstein
  *
  */
-public class Ex1Sync {
+public class Ex1ReentrantLock {
 	
 	private static long counter = 0;
 	public static final long ITERATIONS = 10000;
 	
-	public Ex1Sync() {
+	private static ReentrantLock lock;
+	
+	public Ex1ReentrantLock() {
+		lock = new ReentrantLock();
 	}
 	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
+		
 		long nThreads = 4;
 		long mThreads = 4;
 		long iterations = ITERATIONS;
@@ -28,7 +33,7 @@ public class Ex1Sync {
 			iterations = Integer.decode(args[2]);
 		}
 		
-		Ex1Sync ex1Sync = new Ex1Sync();
+		Ex1ReentrantLock ex1ReentrantLock = new Ex1ReentrantLock();
 		
 		System.out.println("Starting program with '" + nThreads + "' IncrementThreads, '" + mThreads + "' DecrementThreads and '" + iterations + "' iterations.");
 		
@@ -39,11 +44,11 @@ public class Ex1Sync {
 			// Create the threads according to the program arguments 0 (n) and 1 (m).
 			ArrayList<Thread> allThreads = new ArrayList<Thread>();
 			for (int n = 0; n < nThreads; n++) {
-				IncrementThread localThread = ex1Sync.new IncrementThread();
+				IncrementThread localThread = ex1ReentrantLock.new IncrementThread();
 				allThreads.add(localThread);
 			}
 			for (int m = 0; m < mThreads; m++) {
-				DecrementThread localThread = ex1Sync.new DecrementThread();
+				DecrementThread localThread = ex1ReentrantLock.new DecrementThread();
 				allThreads.add(localThread);
 			}
 			
@@ -74,29 +79,37 @@ public class Ex1Sync {
 		System.out.println("Counter has finally the value: " + counter);
 	}
 	
-	public static synchronized void increment() {
+	public static void increment() {
+		lock.lock();
+		
 		long tempValue = counter;
 		tempValue = tempValue + 1;
 		counter = tempValue;
 		//System.out.println("Counter (incremented): " + counter);
+		
+		lock.unlock();
 	}
 	
-	public static synchronized void decrement() {
+	public static void decrement() {
+		lock.lock();
+		
 		long tempValue = counter;
 		tempValue = tempValue - 1;
 		counter = tempValue;
 		//System.out.println("Counter (decremented): " + counter);
+		
+		lock.unlock();
 	}
 	
 	public class IncrementThread extends Thread {
 		public void run() {
-			Ex1Sync.increment();
+			Ex1ReentrantLock.increment();
 		}
 	}
 	
 	public class DecrementThread extends Thread {		
 		public void run() {
-			Ex1Sync.decrement();
+			Ex1ReentrantLock.decrement();
 		}
 	}
 }

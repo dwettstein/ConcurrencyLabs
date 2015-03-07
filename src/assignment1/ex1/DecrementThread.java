@@ -1,14 +1,14 @@
-package ex1;
+package assignment1.ex1;
 
 /**
  * @author dwettstein
  *
  */
-public class IncrementThread extends Thread {
+public class DecrementThread extends Thread {
 	private boolean isStopped = false;
 	
 	public void run() {
-		Ex1NoSync.increment();
+		Ex1NoSync.decrement();
 		
 //		while(!isStopped) {
 //			
