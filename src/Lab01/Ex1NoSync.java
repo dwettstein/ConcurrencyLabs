@@ -1,6 +1,7 @@
 package Lab01;
 
 import java.lang.Thread;
+import java.util.ArrayList;
 
 /**
  * @author dwettstein
@@ -9,53 +10,75 @@ import java.lang.Thread;
 public class Ex1NoSync {
 	
 	private static long counter = 0;
-	private static final long ITERATIONS = 10;
+	public static final long ITERATIONS = 100000;
 	
 	/**
 	 * @param args
 	 */
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-		long nThreads = Integer.decode(args[0]);
-		long mThreads = Integer.decode(args[1]);
-		
-		long startTime = System.nanoTime();
-		
-		// 100'000 iterations
-		for (long i = 0; i < ITERATIONS; i++) {
-			// Create the threads according to the program arguments 0 (n) and 1 (m).
-			
+		long nThreads = 1;
+		long mThreads = 1;
+		long iterations = ITERATIONS;
+		if (args.length != 0) {
+			nThreads = Integer.decode(args[0]);
+			mThreads = Integer.decode(args[1]);
+			iterations = Integer.decode(args[2]);
 		}
+		System.out.println("Starting program with '" + nThreads + "' IncrementThreads, '" + mThreads + "' DecrementThreads and '" + iterations + "' iterations.");
 		
-		long endTime = System.nanoTime();
+		long startTime, endTime;
+		startTime = System.nanoTime();
 		
-		long programDuration = endTime - startTime;
-		System.out.println("Program duration (nanotime): " + programDuration);
-	}
-	
-	private void increment() {
-		long tempValue = counter;
-		tempValue = tempValue + 1;
-		counter = tempValue;
-	}
-	
-	private void decrement() {
-		long tempValue = counter;
-		tempValue = tempValue - 1;
-		counter = tempValue;
-	}
-	
-	private class IncrementThread extends Thread {
-		private boolean isStopped = false;
-		
-		public void run() {
-			while(!isStopped) {
-				
+		for (long i = 0; i < iterations; i++) {
+			// Create the threads according to the program arguments 0 (n) and 1 (m).
+			ArrayList<Thread> allThreads = new ArrayList<Thread>();
+			for (int n = 0; n < nThreads; n++) {
+				IncrementThread localThread = new IncrementThread();
+				allThreads.add(localThread);
+			}
+			for (int m = 0; m < mThreads; m++) {
+				DecrementThread localThread = new DecrementThread();
+				allThreads.add(localThread);
+			}
+			
+			for (Thread thread : allThreads) {
+				thread.start();
+			}
+			
+			boolean isThreadRunning = true;
+			while (isThreadRunning) {
+				for (Thread thread : allThreads) {
+					if (thread.isAlive()) {
+						isThreadRunning = true;
+					}
+					else {
+						isThreadRunning = false;
+					}
+				}
+			}
+			if (i % 1000 == 0) {
+				System.out.println("Counter after '" + i + "' iteration(s): " + counter);
 			}
 		}
 		
-		public void stopThread () {
-			isStopped = true;
-		}
+		endTime = System.nanoTime();
+		
+		long programDuration = endTime - startTime;
+		System.out.println("Program duration (nanotime): " + programDuration);
+		System.out.println("Counter has finally the value: " + counter);
+	}
+	
+	public static void increment() {
+		long tempValue = counter;
+		tempValue = tempValue + 1;
+		counter = tempValue;
+		//System.out.println("Counter (incremented): " + counter);
+	}
+	
+	public static void decrement() {
+		long tempValue = counter;
+		tempValue = tempValue - 1;
+		counter = tempValue;
+		//System.out.println("Counter (decremented): " + counter);
 	}
 }
