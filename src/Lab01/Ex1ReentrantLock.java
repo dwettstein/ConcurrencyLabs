@@ -2,17 +2,21 @@ package Lab01;
 
 import java.lang.Thread;
 import java.util.ArrayList;
+import java.util.concurrent.locks.ReentrantLock;
 
 /**
  * @author dwettstein
  *
  */
-public class Ex1NoSync {
+public class Ex1ReentrantLock {
 	
 	private static long counter = 0;
 	public static final long ITERATIONS = 10000;
 	
-	public Ex1NoSync() {
+	private static ReentrantLock lock;
+	
+	public Ex1ReentrantLock() {
+		lock = new ReentrantLock();
 	}
 	
 	/**
@@ -29,7 +33,7 @@ public class Ex1NoSync {
 			iterations = Integer.decode(args[2]);
 		}
 		
-		Ex1NoSync ex1NoSync = new Ex1NoSync();
+		Ex1ReentrantLock ex1ReentrantLock = new Ex1ReentrantLock();
 		
 		System.out.println("Starting program with '" + nThreads + "' IncrementThreads, '" + mThreads + "' DecrementThreads and '" + iterations + "' iterations.");
 		
@@ -40,11 +44,11 @@ public class Ex1NoSync {
 			// Create the threads according to the program arguments 0 (n) and 1 (m).
 			ArrayList<Thread> allThreads = new ArrayList<Thread>();
 			for (int n = 0; n < nThreads; n++) {
-				IncrementThread localThread = ex1NoSync.new IncrementThread();
+				IncrementThread localThread = ex1ReentrantLock.new IncrementThread();
 				allThreads.add(localThread);
 			}
 			for (int m = 0; m < mThreads; m++) {
-				DecrementThread localThread = ex1NoSync.new DecrementThread();
+				DecrementThread localThread = ex1ReentrantLock.new DecrementThread();
 				allThreads.add(localThread);
 			}
 			
@@ -76,28 +80,36 @@ public class Ex1NoSync {
 	}
 	
 	public static void increment() {
+		lock.lock();
+		
 		long tempValue = counter;
 		tempValue = tempValue + 1;
 		counter = tempValue;
 		//System.out.println("Counter (incremented): " + counter);
+		
+		lock.unlock();
 	}
 	
 	public static void decrement() {
+		lock.lock();
+		
 		long tempValue = counter;
 		tempValue = tempValue - 1;
 		counter = tempValue;
 		//System.out.println("Counter (decremented): " + counter);
+		
+		lock.unlock();
 	}
 	
 	public class IncrementThread extends Thread {
 		public void run() {
-			Ex1NoSync.increment();
+			Ex1ReentrantLock.increment();
 		}
 	}
 	
 	public class DecrementThread extends Thread {		
 		public void run() {
-			Ex1NoSync.decrement();
+			Ex1ReentrantLock.decrement();
 		}
 	}
 }

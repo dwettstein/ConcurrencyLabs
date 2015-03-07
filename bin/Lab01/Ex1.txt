@@ -1,0 +1,7 @@
+Threads:			1		2		4		8
+Ex1NoSync			
+Ex1Sync				
+Ex1ReentrantLock	
+
+Machine Specs:
+Processor:
