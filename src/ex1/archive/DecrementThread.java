@@ -1,4 +1,4 @@
-package Lab01.Archive;
+package ex1.archive;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -7,12 +7,12 @@ import java.lang.reflect.Method;
  * @author dwettstein
  *
  */
-public class IncrementThread extends Thread {
+public class DecrementThread extends Thread {
 	private boolean isStopped = false;
 	private Method methodToRun = null;
 	
 	public void run() {
-		//Ex1NoSync.increment();
+		//Ex1NoSync.decrement();
 		
 		// Run the method loaded dynamically by prepareRun method.
 		try {
@@ -42,7 +42,7 @@ public class IncrementThread extends Thread {
 		try {
 			ClassLoader classLoader = this.getContextClassLoader();
 			Class<?> loadedClass = classLoader.loadClass(className);
-			methodToRun = loadedClass.getMethod("increment", null);
+			methodToRun = loadedClass.getMethod("decrement", null);
 		} catch (ClassNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
