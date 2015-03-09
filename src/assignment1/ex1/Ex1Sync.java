@@ -81,7 +81,7 @@ public class Ex1Sync {
 	public class IncrementThread extends Thread {
 		public void run() {
 			for (long i = 0; i < iterations; i++) {
-				Ex1NoSync.increment();
+				Ex1Sync.increment();
 			}
 		}
 	}
@@ -89,7 +89,7 @@ public class Ex1Sync {
 	public class DecrementThread extends Thread {		
 		public void run() {
 			for (long i = 0; i < iterations; i++) {
-				Ex1NoSync.decrement();
+				Ex1Sync.decrement();
 			}
 		}
 	}

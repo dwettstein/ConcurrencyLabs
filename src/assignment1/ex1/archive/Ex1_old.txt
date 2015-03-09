@@ -1,0 +1,27 @@
+Machine Specs:
+Processor: Intel Core i7-2600k, 3511 MHz (4-Cores)
+OS: Windows 8.1 Pro x64
+Java: 1.8.0_25
+
+Number of threads:		1					2					4					8
+Ex1NoSync				-1, 11267.13, 1		-4, 25336.97, 1		45, 57103.76, 1		22, 119556.94, 1
+Ex1Sync					 0, 11608.16, 1.030  0, 23465.64, 0.926	 0, 58270.07, 1.020  0, 118061.84, 0.987
+Ex1ReentrantLock		 0, 11326.81, 1.005	 0, 26793.60, 1.057	 0, 56961.82, 0.998	 0, 116515.67, 0.975
+
+===========================================================================================================
+
+Machine Specs:
+Sunfire machine
+Java: 1.6.0_10
+
+Number of threads:		1					2					4					8
+Ex1NoSync				0, 25376.21, 1		-6, 45359.15, 1		-7, 83690.10, 1		11, 163045.42, 1
+Ex1Sync					0, 25662.26, 1.011	 0, 45430.79, 1.002	 0, 84122.23, 1.005  0, 163581.99, 1.003
+Ex1ReentrantLock		0, 25426.11, 1.002	 0, 45361.99, 1.000	 0, 83892.80, 1.002	 0, 162479.08, 0.997
+
+===========================================================================================================	
+
+1. value: end value of counter
+2. value: measured duration in ms
+3. value: speed-up against Ex1NoSync
+100'000 iterations each, all threads have to finish before the next iteration begins
