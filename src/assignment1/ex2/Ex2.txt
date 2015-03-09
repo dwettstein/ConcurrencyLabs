@@ -1,0 +1,30 @@
+Ex2.1)
+For implementing the constraints, I'm using three semaphores. 
+The first semaphore ("mutexLock") is a binary semaphore (equal to a mutual exclusion), which is used to secure the manipulations of the actual pot resources.
+The second and third semaphore ("portions" and "refillNeeded") are used to inform the threads about the state of the shared resource. 
+The permits on the semaphore "portions" match the portions in the pot. When there are no more portions in the pot the third semaphore ("refillNeeded") is used to inform the cook. 
+The cook will refill the pot, if it is empty, and inform the waiting savages by releasing the number of refilled portions on the semaphore "portions".
+
+Ex2.2)
+Since I'm using semaphores, the fairness could be achieved by using a first-in-first-out queue when aquiring the permits.
+Another possibility would be using a ticketing system like described in the Bakery algorithm.
+
+Nevertheless, with using semaphores, the fairness is not that bad. Below you can find an output for 10 savages, a pot capacity of 5 and 10'000 refills.
+
+The cook refilled the pot now '10000' times. Now stopping to cook...
+Decreased portions in pot. New number of portions in pot: '4'.
+Decreased portions in pot. New number of portions in pot: '3'.
+Decreased portions in pot. New number of portions in pot: '2'.
+Decreased portions in pot. New number of portions in pot: '1'.
+Decreased portions in pot. New number of portions in pot: '0'.
+The cook stopped working. Now stopping to eat...
+This savage has eaten '5020' portions from the pot.
+This savage has eaten '5028' portions from the pot.
+This savage has eaten '5038' portions from the pot.
+This savage has eaten '4946' portions from the pot.
+This savage has eaten '5015' portions from the pot.
+This savage has eaten '4901' portions from the pot.
+This savage has eaten '4983' portions from the pot.
+This savage has eaten '5059' portions from the pot.
+This savage has eaten '5023' portions from the pot.
+This savage has eaten '4992' portions from the pot.
