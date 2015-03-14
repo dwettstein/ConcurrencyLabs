@@ -23,5 +23,5 @@ Ex1ReentrantLock		     0, 199.203, 6.787	     0, 300.370, 10.822	     0, 405.906
 
 1. value: end value of counter
 2. value: measured duration in ms
-3. value: speed-up against Ex1NoSync
-100'000 iterations each, all threads have to finish before the next iteration begins
+3. value: slow-down against Ex1NoSync
+100'000 iterations each
