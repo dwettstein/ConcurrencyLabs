@@ -9,3 +9,6 @@ volatile, final value 300'000		171.492 ms 						74806, 75075, 224.194 ms 	37436,
 1. value: lowest number of accesses
 2. value: highest number of accesses
 3. value: measured duration in ms
+
+Interpretation:
+With using more threads, each thread increases the counter less times. As a consequence of the wait part in the algorithm, the duration of the test program increases for a higher number of threads. With one thread there is no wait time, with n threads n-1 threads are waiting on the lock of the one thread.
