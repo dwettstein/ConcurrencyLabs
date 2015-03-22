@@ -1,7 +1,17 @@
-Peterson’s algorithm for mutual exclusion provides a quadratic upper bound on fairness, implying that a thread may be skipped O(N^2) times when N threads are completing for the lock.
+Lack of fairness showed with 3 threads:
 
+Threads T1, T2, T3 => Levels 1-3
 
-In the generalized Peterson algorithm there is no starvation so each thread can enter the critical section. But it is not defined when. Theoretically it is possible that a thread has to wait for an infinite number of times.
+1. T1 starts the loop first and sets his level to 1 (level[T1] = 1) and victim[1] = T1
+2. T2 starts the loop next and sets his level to 1 (level[T2] = 1) and victim[1] = T2
+3. T3 starts the loop last and sets his level to 1 (level[T3] = 1) and victim[1] = T3
+4. T2 notices the change of victim first and proceeds to the next level (level[T2] = 2 and victim[2] = T2)
+5. T1 and T3 cannot proceed since they are blocked by T2
+6. T2 is not blocked and can proceed to the last level (level[T2] = 3 and victim[3] = T2) and enters the critical section.
+7. After the CS, T2 sets his level back to level[T2] = 1 and immediately continues trying to get the lock (victim[1] = T2).
+8. Since T3 notices the change of victim[1] first he can proceed as T2 before.
+...
+9. The further procedure is a repetition of the steps 4-8, alternately with T2 and T3. As a consequence T1 has to wait infinitely to get into the critical section.
 
 
 The fairness could be achieved by dividing the lock method into two parts (doorway interval, waiting interval). The result is a bounded waiting, which could be used to achieve first-in-first-out.
