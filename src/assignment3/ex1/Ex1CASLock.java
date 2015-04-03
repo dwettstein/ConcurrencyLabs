@@ -22,7 +22,7 @@ public class Ex1CASLock {
 	
 	public Ex1CASLock(int numberOfThreads) {
 		allIncThreads = new ArrayList<IncrementThread>();
-		threadAccesses = new int[numberOfThreads];
+		this.threadAccesses = new int[numberOfThreads];
 		
 		if (useVolatile) {
 			counter = new VolatileCounter(numberOfThreads);
@@ -36,10 +36,6 @@ public class Ex1CASLock {
 			IncrementThread thread = new IncrementThread();
 			this.allIncThreads.add(thread);
 		}
-	}
-	
-	protected synchronized void increaseThreadAccess(int threadIntId) {
-		this.threadAccesses[threadIntId]++;
 	}
 	
 	public static void main(String[] args) throws InterruptedException {
@@ -197,9 +193,11 @@ public class Ex1CASLock {
 		protected void stopAllThreads() {
 			for (IncrementThread thread : allIncThreads) {
 				if (thread == Thread.currentThread()) {
+//					System.out.println("Thread '" + thread.threadIntId + "' has modified the counter '" + thread.threadAccessCounter.get().get() + "' times.");
 					thread.stopThread();
 				}
 				else {
+//					System.out.println("Thread '" + thread.threadIntId + "' has modified the counter '" + thread.threadAccessCounter.get().get() + "' times.");
 					thread.interrupt();
 				}
 			}
@@ -216,14 +214,17 @@ public class Ex1CASLock {
 		
 		public void increment(int threadIntId) {
 			this.casLock.lock();
+			
+			// Critical section!
 			if (this.counterValue < maxValueOfCounter) {
 				this.counterValue++;
-				increaseThreadAccess(threadIntId);
-				//threadAccesses[threadIntId]++;
+				threadAccesses[threadIntId]++;
 			}
 			else {
 				stopAllThreads();
 			}
+			// End of critical section.
+			
 			this.casLock.unlock();
 		}
 		
@@ -243,14 +244,17 @@ public class Ex1CASLock {
 		
 		public void increment(int threadIntId) {
 			this.casLock.lock();
+			
+			// Critical section!
 			if (this.counterValue < maxValueOfCounter) {
 				this.counterValue++;
-				increaseThreadAccess(threadIntId);
-				//threadAccesses[threadIntId]++;
+				threadAccesses[threadIntId]++;
 			}
 			else {
 				stopAllThreads();
 			}
+			// End of critical section.
+			
 			this.casLock.unlock();
 		}
 		
@@ -263,15 +267,23 @@ public class Ex1CASLock {
 	public class IncrementThread extends Thread {	
 		private boolean isStopped;
 		public int threadIntId;
+//		public ThreadLocal<AtomicInteger> threadAccessCounter;
 		
 		public IncrementThread() {
 			this.isStopped = false;
 			this.threadIntId = this.getIntId();
+//			threadAccessCounter = new ThreadLocal<AtomicInteger>() {
+//				@Override
+//				protected AtomicInteger initialValue() {
+//					return new AtomicInteger(0);
+//				}
+//			};
 		}
 		
 		public void run() {
 			while(!isStopped) {
 				counter.increment(this.threadIntId);
+//				threadAccessCounter.get().getAndIncrement();
 			}
 		}
 		
