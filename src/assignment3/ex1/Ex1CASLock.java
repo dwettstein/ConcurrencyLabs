@@ -17,7 +17,7 @@ public class Ex1CASLock {
 	private static boolean useVolatile = false;
 
 	private ArrayList<IncrementThread> allIncThreads;
-	private int[] threadAccesses;
+	private volatile int[] threadAccesses;
 	private Counter counter;
 	
 	public Ex1CASLock(int numberOfThreads) {
@@ -38,6 +38,10 @@ public class Ex1CASLock {
 		}
 	}
 	
+	protected synchronized void increaseThreadAccess(int threadIntId) {
+		this.threadAccesses[threadIntId]++;
+	}
+	
 	public static void main(String[] args) throws InterruptedException {
 		if (args.length != 0) {
 			numberOfThreads = Integer.decode(args[0]);
@@ -50,18 +54,18 @@ public class Ex1CASLock {
 			}
 		}
 		
-		Ex1CASLock lock = new Ex1CASLock(numberOfThreads);
+		Ex1CASLock ex1 = new Ex1CASLock(numberOfThreads);
 		
 		System.out.println("Starting program with '" + numberOfThreads + "' threads, counter max value '" + maxValueOfCounter + "', useCCAS '" + useCCAS + "' and useVolatile '" + useVolatile + "'.");
 		
 		long startTime, endTime;
 		startTime = System.nanoTime();
 		
-		for (IncrementThread thread : lock.allIncThreads) {
+		for (IncrementThread thread : ex1.allIncThreads) {
 			thread.start();
 		}
 		
-		for (IncrementThread thread : lock.allIncThreads) {
+		for (IncrementThread thread : ex1.allIncThreads) {
 			thread.join();
 		}
 		
@@ -69,10 +73,10 @@ public class Ex1CASLock {
 		
 		long programDuration = endTime - startTime;
 		System.out.println("Program duration (nanotime): '" + programDuration + "', in ms: '" + (programDuration / 1e6) + "'.");
-		System.out.println("Counter has finally the value: " + lock.counter.getValue());
-		for (IncrementThread thread : lock.allIncThreads) {
-			int threadIntId = thread.getIntId();
-			System.out.println("Thread '" + threadIntId + "' has modified the counter '" + lock.threadAccesses[threadIntId] + "' times.");
+		System.out.println("Counter has finally the value: " + ex1.counter.getValue());
+		for (IncrementThread thread : ex1.allIncThreads) {
+			int threadIntId = thread.threadIntId;
+			System.out.println("Thread '" + threadIntId + "' has modified the counter '" + ex1.threadAccesses[threadIntId] + "' times.");
 		}
 	}
 	
@@ -189,6 +193,17 @@ public class Ex1CASLock {
 		public abstract void increment(int threadIntId);
 		
 		public abstract long getValue();
+		
+		protected void stopAllThreads() {
+			for (IncrementThread thread : allIncThreads) {
+				if (thread == Thread.currentThread()) {
+					thread.stopThread();
+				}
+				else {
+					thread.interrupt();
+				}
+			}
+		}
 	}
 	
 	public class NonVolatileCounter extends Counter {
@@ -203,18 +218,11 @@ public class Ex1CASLock {
 			this.casLock.lock();
 			if (this.counterValue < maxValueOfCounter) {
 				this.counterValue++;
-				threadAccesses[threadIntId]++;
+				increaseThreadAccess(threadIntId);
+				//threadAccesses[threadIntId]++;
 			}
 			else {
-				// Stop all threads.
-				for (IncrementThread thread : allIncThreads) {
-					if (thread == Thread.currentThread()) {
-						thread.stopThread();
-					}
-					else {
-						thread.interrupt();
-					}
-				}
+				stopAllThreads();
 			}
 			this.casLock.unlock();
 		}
@@ -237,18 +245,11 @@ public class Ex1CASLock {
 			this.casLock.lock();
 			if (this.counterValue < maxValueOfCounter) {
 				this.counterValue++;
-				threadAccesses[threadIntId]++;
+				increaseThreadAccess(threadIntId);
+				//threadAccesses[threadIntId]++;
 			}
 			else {
-				// Stop all threads.
-				for (IncrementThread thread : allIncThreads) {
-					if (thread == Thread.currentThread()) {
-						thread.stopThread();
-					}
-					else {
-						thread.interrupt();
-					}
-				}
+				stopAllThreads();
 			}
 			this.casLock.unlock();
 		}
@@ -260,8 +261,13 @@ public class Ex1CASLock {
 	}
 	
 	public class IncrementThread extends Thread {	
-		private boolean isStopped = false;
-		public int threadIntId = this.getIntId();
+		private boolean isStopped;
+		public int threadIntId;
+		
+		public IncrementThread() {
+			this.isStopped = false;
+			this.threadIntId = this.getIntId();
+		}
 		
 		public void run() {
 			while(!isStopped) {
