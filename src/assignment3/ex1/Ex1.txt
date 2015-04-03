@@ -1,0 +1,25 @@
+Machine Specs:
+Sunfire machine
+Java: 1.6.0_10
+
+1. value: lowest number of accesses
+2. value: highest number of accesses
+3. value: measured duration in ms
+
+PetersonLock (from assignment 2):
+========================================================================================
+Number of threads:					4							8
+no volatile, final value 300'000	74812, 75081, 214.487 ms	37330, 37532, 336.006 ms
+volatile, final value 300'000		74806, 75075, 224.194 ms 	37436, 37522, 345.630 ms
+
+CASLock:
+========================================================================================
+Number of threads:					4							8
+no volatile, final value 300'000	81441, 108933, 25.651 ms	48744, 58250, 24.861 ms
+volatile, final value 300'000		74806, 75075, 25.618 ms 	42877, 57361, 25.618 ms
+
+CCASLock:
+========================================================================================
+Number of threads:					4							8
+no volatile, final value 300'000	74812, 75081, 214.487 ms	37330, 37532, 336.006 ms
+volatile, final value 300'000		74806, 75075, 224.194 ms 	37436, 37522, 345.630 ms
