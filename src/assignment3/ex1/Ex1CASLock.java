@@ -128,7 +128,7 @@ public class Ex1CASLock {
 	}
 
 
-		public class CASLock extends AbstractCASLock {
+	public class CASLock extends AbstractCASLock {
 		
 		public CASLock() {
 			super();
@@ -136,9 +136,10 @@ public class Ex1CASLock {
 		
 		@Override
 		public void lock() {
-			while (this.lockState.compareAndSet(0, 1)) {
-				// Lock acquired successfully.
+			while (!this.lockState.compareAndSet(0, 1)) {
+				// Wait until lock is free (lockState == 0).
 			}
+			// Lock acquired successfully.
 		}
 	}
 	
@@ -193,11 +194,9 @@ public class Ex1CASLock {
 		protected void stopAllThreads() {
 			for (IncrementThread thread : allIncThreads) {
 				if (thread == Thread.currentThread()) {
-//					System.out.println("Thread '" + thread.threadIntId + "' has modified the counter '" + thread.threadAccessCounter.get().get() + "' times.");
 					thread.stopThread();
 				}
 				else {
-//					System.out.println("Thread '" + thread.threadIntId + "' has modified the counter '" + thread.threadAccessCounter.get().get() + "' times.");
 					thread.interrupt();
 				}
 			}
@@ -267,23 +266,15 @@ public class Ex1CASLock {
 	public class IncrementThread extends Thread {	
 		private boolean isStopped;
 		public int threadIntId;
-//		public ThreadLocal<AtomicInteger> threadAccessCounter;
-		
+
 		public IncrementThread() {
 			this.isStopped = false;
 			this.threadIntId = this.getIntId();
-//			threadAccessCounter = new ThreadLocal<AtomicInteger>() {
-//				@Override
-//				protected AtomicInteger initialValue() {
-//					return new AtomicInteger(0);
-//				}
-//			};
 		}
 		
 		public void run() {
 			while(!isStopped) {
 				counter.increment(this.threadIntId);
-//				threadAccessCounter.get().getAndIncrement();
 			}
 		}
 		

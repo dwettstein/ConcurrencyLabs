@@ -14,12 +14,17 @@ volatile, final value 300'000		74806, 75075, 224.194 ms 	37436, 37522, 345.630 m
 
 CASLock:
 ========================================================================================
-Number of threads:					4							8
-no volatile, final value 300'000	81441, 108933, 25.651 ms	48744, 58250, 24.861 ms
-volatile, final value 300'000		74806, 75075, 25.618 ms 	42877, 57361, 25.618 ms
+Number of threads:					4							8 							16
+no volatile, final value 300'000	73914,  75990, 89.634 ms	28642, 45742, 102.305 ms 	17933, 19992, 232.483 ms
+volatile, final value 300'000		53921, 122076, 93.845 ms 	32636, 51800, 114.313 ms 	 9345, 77999, 220.545 ms
 
 CCASLock:
 ========================================================================================
-Number of threads:					4							8
-no volatile, final value 300'000	74812, 75081, 214.487 ms	37330, 37532, 336.006 ms
-volatile, final value 300'000		74806, 75075, 224.194 ms 	37436, 37522, 345.630 ms
+Number of threads:					4							8 							16
+no volatile, final value 300'000	22368, 93182,   98.643 ms	11426, 53511, 104.895 ms 	9073, 25388, 188.512 ms
+volatile, final value 300'000		19856, 129998, 105.574 ms 	25428, 44393, 113.697 ms 	3924, 28942, 189.653 ms
+
+
+Interpretation:
+The CASLock performs much better than Peterson's lock used in assignment 2. Unfortunately, the number of thread accesses has a bigger distribution, which means that the algorithm is more unfair the Peterson's lock.
+For a small number of threads (4 threads) the CCASLock is a bit slower than the CASLock. But if we increase the number of threads (e.g. 16 threads), the CCASLock gets more efficient than the CASLock.
