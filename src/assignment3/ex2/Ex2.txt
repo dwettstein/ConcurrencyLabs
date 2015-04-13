@@ -1,0 +1,26 @@
+Machine Specs:
+Sunfire machine
+Java: 1.6.0_10
+
+value: average duration of 3 runs in ms (skipped first run for getting better results)
+
+NoLockQueue:
+========================================================================================
+Number of threads:		2 			4				8
+queueSize 20						214.487 ms		336.006 ms
+queueSize 50 						224.194 ms 		345.630 ms
+
+SingleLockQueue:
+========================================================================================
+Number of threads:		2 			4				8
+queueSize 20						214.487 ms		336.006 ms
+queueSize 50 						224.194 ms 		345.630 ms
+
+TwoLockQueue:
+========================================================================================
+Number of threads:		2 			4				8
+queueSize 20						214.487 ms		336.006 ms
+queueSize 50 						224.194 ms 		345.630 ms
+
+
+Interpretation:
