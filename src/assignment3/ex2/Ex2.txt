@@ -6,21 +6,23 @@ value: average duration of 3 runs in ms (skipped first run for getting better re
 
 NoLockQueue:
 ========================================================================================
-Number of threads:		2 			4				8
-queueSize 20						214.487 ms		336.006 ms
-queueSize 50 						224.194 ms 		345.630 ms
+Number of threads:		2
+queueSize 20			48.448 ms
+queueSize 50 			48.228 ms
 
 SingleLockQueue:
 ========================================================================================
-Number of threads:		2 			4				8
-queueSize 20						214.487 ms		336.006 ms
-queueSize 50 						224.194 ms 		345.630 ms
+Number of threads:		2				4				8
+queueSize 20			63.018 ms		290.457 ms		363.699 ms
+queueSize 50 			62.552 ms		136.618 ms 		275.385 ms
 
 TwoLockQueue:
 ========================================================================================
-Number of threads:		2 			4				8
-queueSize 20						214.487 ms		336.006 ms
-queueSize 50 						224.194 ms 		345.630 ms
+Number of threads:		2 				4				8
+queueSize 20			60.299 ms		69.575 ms		127.003 ms
+queueSize 50 			60.189 ms		69.615 ms 		123.308 ms
 
 
 Interpretation:
+For only two threads (no concurrency within the different worker types) using a queue without locks is faster than a queue with locks, but this is not applicable for more than two threads.
+When using locks to handle the concurrency, it is faster (in this case twice as fast) to split the lock for the head and tail pointers into two locks (TwoLockQueue). This observation is as expected, since only the threads of the same type will have to wait, while with one lock also the threads of the other type will have to wait.

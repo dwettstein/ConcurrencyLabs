@@ -1,7 +1,7 @@
 package assignment3.ex2;
 
 public abstract class QueueWorker extends Thread {
-	private static final int MAX_UPDATES = 100;
+	private static final int MAX_UPDATES = 100000;
 	protected ThreadLocal<Integer> queueUpdates; 
 	protected IQueue queue;
 	

@@ -87,7 +87,7 @@ public class Ex2 {
 			}
 		}
 		
-		System.out.printf("Average program duration in ms: '%.3f'. Program options: threads '" + numberOfThreads + "', queueSize '" + queueSize + "' and queueType '" + queueType + "'.", (totalTime / numberOfRuns / 1e6));
+		System.out.printf("Average program duration in ms: '%.3f'. Program options: threads '" + numberOfThreads + "', queueSize '" + queueSize + "' and queueType '" + queueType + "'.\n", (totalTime / numberOfRuns / 1e6));
 	}
 
 }
