@@ -1,12 +1,12 @@
 package assignment4;
 
-public class FineGrainedLockList implements ISet {
+public class OptimisticFineGrainedLockList implements ISet {
 	Node head;
 	Node tail;
 	Node headSentinelNode;
 	Node tailSentinelNode;
 	
-	public FineGrainedLockList() {
+	public OptimisticFineGrainedLockList() {
 		headSentinelNode = new Node(Integer.MIN_VALUE);
 		this.head = headSentinelNode;
 		tailSentinelNode = new Node(Integer.MAX_VALUE);
@@ -128,4 +128,5 @@ public class FineGrainedLockList implements ISet {
 		}
 		return result;
 	}
+	
 }

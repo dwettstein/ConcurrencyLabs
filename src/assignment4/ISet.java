@@ -1,6 +1,6 @@
 package assignment4;
 
-public interface Set {
+public interface ISet {
 	public boolean add(Object x);
 
 	public boolean remove(Object x);

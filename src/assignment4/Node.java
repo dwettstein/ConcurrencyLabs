@@ -9,8 +9,10 @@ public class Node {
 	
 	ReentrantLock lock;
 	
-	public Node() {
+	public Node(int key) {
 		// Sentinel node.
+		this.object = new Object();
+		this.key = key;
 		this.lock = new ReentrantLock();
 	}
 	
@@ -31,5 +33,12 @@ public class Node {
 	
 	public void unlock() {
 		this.lock.unlock();
+	}
+
+	public boolean hasNext() {
+		if (this.next != null) {
+			return true;
+		}
+		return false;
 	}
 }
