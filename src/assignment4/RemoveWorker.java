@@ -2,13 +2,13 @@ package assignment4;
 
 public class RemoveWorker extends ListWorker {
 
-	public RemoveWorker(ISet list, int maxUpdates) {
-		super(list, maxUpdates);
+	public RemoveWorker(ISet list, int[] numbersToRemove) {
+		super(list, numbersToRemove);
 	}
 
 	@Override
 	protected void work() {
-		this.list.remove(this.numberOfUpdates.get());
+		this.list.remove(this.numbersForWork[this.numberOfUpdates.get()]);
 	}
 
 }

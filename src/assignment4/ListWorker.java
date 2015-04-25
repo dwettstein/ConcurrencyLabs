@@ -1,11 +1,11 @@
 package assignment4;
 
 public abstract class ListWorker extends Thread {
-	private int maxUpdates = 100;
+	protected int[] numbersForWork;
 	protected ThreadLocal<Integer> numberOfUpdates; 
 	protected ISet list;
 	
-	public ListWorker(ISet list, int maxUpdates) {
+	public ListWorker(ISet list, int[] numbersForWork) {
 		this.numberOfUpdates = new ThreadLocal<Integer>() {
 			@Override
 			protected Integer initialValue() {
@@ -13,7 +13,7 @@ public abstract class ListWorker extends Thread {
 			}
 		};
 		this.list = list;
-		this.maxUpdates = maxUpdates;
+		this.numbersForWork = numbersForWork;
 	}
 	
 	protected abstract void work();
@@ -22,7 +22,7 @@ public abstract class ListWorker extends Thread {
 	public void run() {
 		while (true) {
 			int currentUpdates = this.numberOfUpdates.get();
-			if (currentUpdates < this.maxUpdates) {
+			if (currentUpdates < this.numbersForWork.length) {
 				this.work();
 				currentUpdates++;
 				this.numberOfUpdates.set(currentUpdates);

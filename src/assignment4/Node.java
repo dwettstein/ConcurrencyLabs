@@ -3,11 +3,11 @@ package assignment4;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Node {
-	Object object;
-	int key;
-	Node next;
+	protected Object object;
+	protected int key;
+	protected Node next;
 	
-	ReentrantLock lock;
+	protected ReentrantLock lock;
 	
 	public Node(int key) {
 		// Sentinel node.
@@ -40,5 +40,9 @@ public class Node {
 			return true;
 		}
 		return false;
+	}
+	
+	public String toString() {
+		return String.valueOf(this.key);
 	}
 }

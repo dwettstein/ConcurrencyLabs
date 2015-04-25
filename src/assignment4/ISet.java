@@ -6,4 +6,6 @@ public interface ISet {
 	public boolean remove(Object x);
 	
 	public boolean contains(Object x);
+	
+	public int getSize();
 }

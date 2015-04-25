@@ -1,19 +1,12 @@
 package assignment4;
 
-public class FineGrainedLockList implements ISet {
-	Node head;
-	Node tail;
-	Node headSentinelNode;
-	Node tailSentinelNode;
+public class FineGrainedLockList extends AbstractFineGrainedLockList {
 	
 	public FineGrainedLockList() {
-		headSentinelNode = new Node(Integer.MIN_VALUE);
-		this.head = headSentinelNode;
-		tailSentinelNode = new Node(Integer.MAX_VALUE);
-		this.tail = tailSentinelNode;
-		this.head.setNextNode(tailSentinelNode);
+		super();
 	}
 	
+	@Override
 	public boolean add(Object object) {
 		int key = object.hashCode();
 		Node pred = this.head;
@@ -50,7 +43,8 @@ public class FineGrainedLockList implements ISet {
 		}
 		return isSuccess;
 	}
-
+	
+	@Override
 	public boolean remove(Object object) {
 		int key = object.hashCode();
 		Node pred = this.head;
@@ -86,46 +80,5 @@ public class FineGrainedLockList implements ISet {
 			pred.unlock();
 		}
 	}
-
-	public boolean contains(Object object) {
-		int key = object.hashCode();
-		Node pred = this.head;
-		Node curr = pred.next;
-		boolean isFound = false;
-		
-		try {
-			// Lock current and predecessor node.
-			pred.lock();
-			curr.lock();
-
-			// Traverse the list.
-			while (curr.key <= key) {
-				if (object == curr.object) {
-					// We have found the object.
-					isFound = true;
-					break;
-				}
-				// The object is not found yet, make a hand-over-hand of nodes and lock the successor of the current node.
-				pred.unlock();
-				pred = curr;
-				curr = curr.next;
-				curr.lock();
-			}
-		} finally {
-			curr.unlock();
-			pred.unlock();
-		}
-		return isFound;
-	}
 	
-	public String toString() {
-		String result = "";
-		Node currentNode = this.head;
-		result += currentNode.key;
-		while (currentNode.hasNext()) {
-			currentNode = currentNode.next;
-			result += " - " + currentNode.key;
-		}
-		return result;
-	}
 }
