@@ -53,14 +53,12 @@ public class OptimisticFineGrainedLockList implements ISet {
 
 	public boolean remove(Object object) {
 		int key = object.hashCode();
-		Node pred = this.head;
-		Node curr = pred.next;
+		boolean isObjectFound = false;
 		
-		try {
-			// Lock current and predecessor node.
-			pred.lock();
-			curr.lock();
-
+		while (true) {
+			Node pred = this.head;
+			Node curr = pred.next;
+			
 			// Check if list is empty.
 			if (pred == this.headSentinelNode && curr == this.tailSentinelNode) {
 				return false;
@@ -69,24 +67,40 @@ public class OptimisticFineGrainedLockList implements ISet {
 			// Traverse the list.
 			while (curr.key <= key) {
 				if (object == curr.object) {
-					// We have found the object, now set the new links.
-					pred.next = curr.next;
-					return true;
+					// We have found the object.
+					isObjectFound = true;
+					break;
 				}
 				// The object is not found yet, make a hand-over-hand of nodes and lock the successor of the current node.
-				pred.unlock();
 				pred = curr;
 				curr = curr.next;
-				curr.lock();
 			}
-			// The object has not been found in the list.
-			return false;
-		} finally {
-			curr.unlock();
-			pred.unlock();
+			
+			if (!isObjectFound) {
+				// The object has not been found in the list.
+				return false;
+			}
+			
+			try {
+				// Lock current and predecessor node.
+				pred.lock();
+				curr.lock();
+				
+				if (validate(pred, curr)) {
+					if (curr.object == object) {
+						// We have found and validated the object, now set the new links.
+						pred.next = curr.next;
+						return true;
+					} else
+						return false;
+				}
+			} finally {
+				pred.unlock();
+				curr.unlock();
+			}
 		}
 	}
-
+	
 	public boolean contains(Object object) {
 		int key = object.hashCode();
 		Node pred = this.head;
@@ -116,6 +130,16 @@ public class OptimisticFineGrainedLockList implements ISet {
 			pred.unlock();
 		}
 		return isFound;
+	}
+	
+	private boolean validate(Node pred, Node curr) {
+		Node node = this.head;
+		while (node.key <= pred.key) {
+			if (node == pred)
+				return pred.next == curr;
+			node = node.next;
+		}
+		return false;
 	}
 	
 	public String toString() {

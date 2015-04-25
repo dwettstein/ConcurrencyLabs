@@ -38,7 +38,8 @@ public class A4 {
 		if (args.length != 0) {
 			numberOfThreads = Integer.decode(args[0]);
 			listSize = Integer.decode(args[1]);
-			if (args[2].toString() == "useOptimistic") {
+			System.out.println(args[2].toString());
+			if (args[2].matches("useOptimistic")) {
 				useOptimistic = true;
 			}
 			if (args.length >= 4) {

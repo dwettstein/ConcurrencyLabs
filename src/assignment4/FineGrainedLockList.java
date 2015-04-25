@@ -56,15 +56,15 @@ public class FineGrainedLockList implements ISet {
 		Node pred = this.head;
 		Node curr = pred.next;
 		
+		// Check if list is empty.
+		if (pred == this.headSentinelNode && curr == this.tailSentinelNode) {
+			return false;
+		}
+		
 		try {
 			// Lock current and predecessor node.
 			pred.lock();
 			curr.lock();
-
-			// Check if list is empty.
-			if (pred == this.headSentinelNode && curr == this.tailSentinelNode) {
-				return false;
-			}
 			
 			// Traverse the list.
 			while (curr.key <= key) {
