@@ -52,7 +52,8 @@ public class A4 {
 		}
 		
 		long totalTime = 0;
-		for (int i = 0; i < numberOfRuns + 1; i++) {
+		int runsToSkip = 2;
+		for (int i = 0; i < numberOfRuns + runsToSkip; i++) {
 			A4 a4 = new A4();
 			
 			System.out.println("Starting program with '" + numberOfThreads + "' threads, listSize '" + listSize + "', updatesPerThread '" + listSize / numberOfThreads + "', useOptimistic '" + useOptimistic + "' and numberOfRuns '" + numberOfRuns + "'.");
@@ -72,9 +73,10 @@ public class A4 {
 			
 			long programDuration = endTime - startTime;
 			System.out.println("Program duration (nanotime): '" + programDuration + "', in ms: '" + (programDuration / 1e6) + "'.");
-			System.out.println("Final list (length: " + a4.list.getSize() + "): \n" + a4.list.toString());
-			if (i > 0) {
-				// Don't use the first run, since it takes a lot longer than the other runs.
+			System.out.println("Final list (length: " + a4.list.getSize() + ").");
+			//System.out.println(a4.list.toString());
+			if (i > runsToSkip - 1) {
+				// Don't use the runsToSkip runs, since they take a lot longer than the other runs.
 				totalTime += programDuration;
 			}
 		}

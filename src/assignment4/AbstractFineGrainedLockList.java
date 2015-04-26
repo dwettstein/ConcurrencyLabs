@@ -2,8 +2,8 @@ package assignment4;
 
 public abstract class AbstractFineGrainedLockList implements ISet {
 
-	protected Node head;
-	protected Node tail;
+	protected volatile Node head;
+	protected volatile Node tail;
 	protected Node headSentinelNode;
 	protected Node tailSentinelNode;
 

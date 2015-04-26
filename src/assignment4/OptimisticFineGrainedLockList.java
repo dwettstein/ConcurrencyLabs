@@ -19,14 +19,20 @@ public class OptimisticFineGrainedLockList extends AbstractFineGrainedLockList {
 				// The list is empty and we can directly insert the node.
 			}
 			else {
-				while (succ.key <= key) {
+				while (succ != null && succ.key <= key) {
 					// The object is not found yet, make a hand-over-hand of nodes to the successor of the current node.
 					pred = succ;
 					succ = succ.next;
 				}
 			}
 			
+			if (pred != null || succ != null) {
 			try {
+				// TODO: Should be removed.
+				if (pred == null || succ == null) {
+					return false;
+				}
+				
 				// Lock current and successor node.
 				pred.lock();
 				succ.lock();
@@ -38,9 +44,22 @@ public class OptimisticFineGrainedLockList extends AbstractFineGrainedLockList {
 					insertNode.setNextNode(succ);
 					return true;
 				}
-			} finally {
-				succ.unlock();
-				pred.unlock();
+				else {
+					return false;
+				}
+			} 
+//			catch (Exception e) {
+//				System.out.println("Catched exception: " + e.toString());
+//			}
+			finally {
+//				try {
+					succ.unlock();
+					pred.unlock();
+//				}
+//				catch (Exception e) {
+//					System.out.println("Catched exception: " + e.toString());
+//				}
+			}
 			}
 		}
 		
@@ -78,6 +97,10 @@ public class OptimisticFineGrainedLockList extends AbstractFineGrainedLockList {
 			}
 			
 			try {
+//				if (pred == null || curr == null) {
+//					return false;
+//				}
+				
 				// Lock current and predecessor node.
 				pred.lock();
 				curr.lock();
@@ -87,8 +110,13 @@ public class OptimisticFineGrainedLockList extends AbstractFineGrainedLockList {
 						// We have found and validated the object, now set the new links.
 						pred.setNextNode(curr.next);
 						return true;
-					} else
+					} 
+					else {
 						return false;
+					}
+				}
+				else {
+					return false;
 				}
 			} finally {
 				curr.unlock();
@@ -98,18 +126,19 @@ public class OptimisticFineGrainedLockList extends AbstractFineGrainedLockList {
 	}
 	
 	private boolean validate(Node pred, Node curr) {
-		Node node = this.head;
 		try {
-		while (node.key <= pred.key) {
-			// Check if node "pred" is still accessible.
-			if (node == pred)
-				// Check if the provided nodes are still adjacent.
-				return pred.next == curr;
-			node = node.next;
-		}
+			Node node = this.head;
+			while (node.key <= pred.key) {
+				// Check if node "pred" is still accessible.
+				if (node == pred)
+					// Check if the provided nodes are still adjacent.
+					return pred.next == curr;
+				node = node.next;
+			}
 		}
 		catch (Exception e) {
-			System.out.println("Catched exception: \n" + e.toString());
+			//System.out.println("Catched exception: " + e.toString());
+			return false;
 		}
 		return false;
 	}
