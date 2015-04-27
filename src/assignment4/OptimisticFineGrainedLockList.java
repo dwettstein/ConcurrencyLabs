@@ -26,17 +26,16 @@ public class OptimisticFineGrainedLockList extends AbstractFineGrainedLockList {
 				succ.lock();
 				
 				if (validate(pred, succ)) {
-//					if (pred.getKey() == key) {
+//					if (pred.getKey() == key || succ.getKey() == key) {
 //						// Don't add nodes with equal keys.
 //						return false;
 //					}
-//					else {
-						// We have found the correct place, now insert the node.
-						Node insertNode = new Node(object);
-						pred.setNextNode(insertNode);
-						insertNode.setNextNode(succ);
-						return true;
-//					}
+					
+					// We have found the correct place, now insert the node.
+					Node insertNode = new Node(object);
+					pred.setNextNode(insertNode);
+					insertNode.setNextNode(succ);
+					return true;
 				}
 			} 
 			finally {
