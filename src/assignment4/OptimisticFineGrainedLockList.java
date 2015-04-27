@@ -7,81 +7,57 @@ public class OptimisticFineGrainedLockList extends AbstractFineGrainedLockList {
 	}
 	
 	@Override
-	public boolean add(Object object) {
-		int key = object.hashCode();
-
+	public boolean add(int object) {
+		int key = object;
+		
 		while (true) {
 			Node pred = this.head;
-			Node succ = pred.next;		
+			Node succ = pred.next;
 			
-			// Traverse the list and find the correct place to insert the node.
-			if (pred == this.headSentinelNode && succ == this.tailSentinelNode) {
-				// The list is empty and we can directly insert the node.
+			while (succ.getKey() <= key) {
+				// The object is not found yet, make a hand-over-hand of nodes to the successor of the current node.
+				pred = succ;
+				succ = succ.next;
 			}
-			else {
-				while (succ != null && succ.key <= key) {
-					// The object is not found yet, make a hand-over-hand of nodes to the successor of the current node.
-					pred = succ;
-					succ = succ.next;
-				}
-			}
-			
-			if (pred != null || succ != null) {
-			try {
-				// TODO: Should be removed.
-				if (pred == null || succ == null) {
-					return false;
-				}
 				
+			try {
 				// Lock current and successor node.
 				pred.lock();
 				succ.lock();
 				
 				if (validate(pred, succ)) {
-					// We have found the correct place, now insert the node.
-					Node insertNode = new Node(object);
-					pred.setNextNode(insertNode);
-					insertNode.setNextNode(succ);
-					return true;
-				}
-				else {
-					return false;
+//					if (pred.getKey() == key) {
+//						// Don't add nodes with equal keys.
+//						return false;
+//					}
+//					else {
+						// We have found the correct place, now insert the node.
+						Node insertNode = new Node(object);
+						pred.setNextNode(insertNode);
+						insertNode.setNextNode(succ);
+						return true;
+//					}
 				}
 			} 
-//			catch (Exception e) {
-//				System.out.println("Catched exception: " + e.toString());
-//			}
 			finally {
-//				try {
 					succ.unlock();
 					pred.unlock();
-//				}
-//				catch (Exception e) {
-//					System.out.println("Catched exception: " + e.toString());
-//				}
-			}
 			}
 		}
-		
 	}
 	
 	@Override
-	public boolean remove(Object object) {
-		int key = object.hashCode();
+	public boolean remove(int object) {
+		int key = object;
 		boolean isObjectFound = false;
 		
 		while (true) {
 			Node pred = this.head;
 			Node curr = pred.next;
 			
-			// Check if list is empty.
-			if (pred == this.headSentinelNode && curr == this.tailSentinelNode) {
-				return false;
-			}
-			
 			// Traverse the list.
-			while (curr != null && curr.key <= key) {
-				if (object == curr.object) {
+			while (curr.getKey() <= key) {
+				if (object == curr.getKey()) {
 					// We have found the object.
 					isObjectFound = true;
 					break;
@@ -96,17 +72,13 @@ public class OptimisticFineGrainedLockList extends AbstractFineGrainedLockList {
 				return false;
 			}
 			
-			try {
-//				if (pred == null || curr == null) {
-//					return false;
-//				}
-				
+			try {		
 				// Lock current and predecessor node.
 				pred.lock();
 				curr.lock();
 				
 				if (validate(pred, curr)) {
-					if (curr.object == object) {
+					if (curr.getKey() == key) {
 						// We have found and validated the object, now set the new links.
 						pred.setNextNode(curr.next);
 						return true;
@@ -115,8 +87,53 @@ public class OptimisticFineGrainedLockList extends AbstractFineGrainedLockList {
 						return false;
 					}
 				}
-				else {
-					return false;
+			} finally {
+				curr.unlock();
+				pred.unlock();
+			}
+		}
+	}
+	
+	@Override
+	public boolean contains(int object) {
+		int key = object;
+		boolean isObjectFound = false;
+		
+		while (true) {
+			Node pred = this.head;
+			Node curr = pred.next;
+			
+			// Traverse the list.
+			while (curr.getKey() <= key) {
+				if (object == curr.getKey()) {
+					// We have found the object.
+					isObjectFound = true;
+					break;
+				}
+				// The object is not found yet, make a hand-over-hand of nodes and lock the successor of the current node.
+				pred = curr;
+				curr = curr.next;
+			}
+			
+			if (!isObjectFound) {
+				// The object has not been found in the list.
+				return false;
+			}
+			
+			// If the object has been found, lock and re-check if it is really available.
+			try {
+				// Lock current and predecessor node.
+				pred.lock();
+				curr.lock();
+				
+				if (validate(pred, curr)) {
+					if (curr.getKey() == key) {
+						// We have found and validated the object.
+						return true;
+					} 
+					else {
+						return false;
+					}
 				}
 			} finally {
 				curr.unlock();
@@ -126,19 +143,14 @@ public class OptimisticFineGrainedLockList extends AbstractFineGrainedLockList {
 	}
 	
 	private boolean validate(Node pred, Node curr) {
-		try {
-			Node node = this.head;
-			while (node.key <= pred.key) {
-				// Check if node "pred" is still accessible.
-				if (node == pred)
-					// Check if the provided nodes are still adjacent.
-					return pred.next == curr;
-				node = node.next;
+		Node node = this.head;
+		while (node.getKey() <= pred.getKey()) {
+			// Check if node "pred" is still accessible.
+			if (node == pred) {
+				// Check if the provided nodes are still adjacent.
+				return pred.next == curr;
 			}
-		}
-		catch (Exception e) {
-			//System.out.println("Catched exception: " + e.toString());
-			return false;
+			node = node.next;
 		}
 		return false;
 	}

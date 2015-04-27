@@ -10,18 +10,17 @@ public class Node {
 	protected ReentrantLock lock;
 	
 	public Node(int key) {
-		// Sentinel node.
 		this.object = new Object();
 		this.key = key;
 		this.lock = new ReentrantLock();
 	}
 	
-	public Node(Object object) {
-		this.object = object;
-		this.key = object.hashCode();
-		
-		this.lock = new ReentrantLock();
-	}
+//	public Node(Object object) {
+//		this.object = object;
+//		this.key = object.hashCode();
+//		
+//		this.lock = new ReentrantLock();
+//	}
 	
 	public void setNextNode(Node next) {
 		this.next = next;
@@ -40,6 +39,10 @@ public class Node {
 			return true;
 		}
 		return false;
+	}
+	
+	public int getKey() {
+		return this.key;
 	}
 	
 	public String toString() {

@@ -1,11 +1,11 @@
 package assignment4;
 
 public interface ISet {
-	public boolean add(Object x);
+	public boolean add(int x);
 
-	public boolean remove(Object x);
+	public boolean remove(int x);
 	
-	public boolean contains(Object x);
+	public boolean contains(int x);
 	
 	public int getSize();
 }
