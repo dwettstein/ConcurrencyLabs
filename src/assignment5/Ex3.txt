@@ -1,0 +1,23 @@
+Machine Specs:
+Sunfire machine
+Java: 1.6.0_10
+
+Updates per thread: 100'000 integers divided by number of threads.
+value: average duration of 3 runs in ms (skipped first run for getting better results)
+
+FineGrainedLockList:
+========================================================================================
+Number of threads:		2 				4 				8
+Allow duplicates		10378.723 ms	5241.797 ms 	2873.506 ms
+Don't allow duplicates	  296.585 ms	1263.386 ms 	1256.993 ms
+
+OptimisticFineGrainedLockList:
+========================================================================================
+Number of threads:		2				4				8
+Allow duplicates		5159.128 ms		2662.216 ms		2060.416 ms
+Don't allow duplicates	 107.985 ms		  71.449 ms 	  93.520 ms
+
+
+Interpretation:
+As expected, the optimized version of the FineGrainedLockList has a much better performance. The reason, why the program performs so much faster when not allowing duplicates, is that there are a lot less items in the list.
+The conclusion for this experiment is that it can be much more efficient to implement parts of your algorithms without locking, whenever it is possible.
