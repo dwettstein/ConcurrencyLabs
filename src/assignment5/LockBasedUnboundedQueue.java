@@ -1,5 +1,6 @@
 package assignment5;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class LockBasedUnboundedQueue extends AbstractUnboundedQueue {
@@ -18,8 +19,9 @@ public class LockBasedUnboundedQueue extends AbstractUnboundedQueue {
 		this.enqLock.lock();
 		try {
 			Node newNode = new Node(value);
-			this.tail.setNextNode(newNode);
-			tail = newNode;
+			AtomicReference<Node> newNodeRef = new AtomicReference<Node>(newNode);
+			this.tail.get().setNextNode(newNodeRef);
+			this.tail = newNodeRef;
 		}
 		finally {
 			this.enqLock.unlock();
@@ -28,18 +30,21 @@ public class LockBasedUnboundedQueue extends AbstractUnboundedQueue {
 	
 	@Override
 	public Object deq() {
-		Object result;
+		Object result = null;
 		this.deqLock.lock();
 		try {
 			// Check if queue is empty.
-			if (this.head.next == this.tail) {
-				System.out.println("The queue is empty.");
+			if (this.head.get().next == this.tail) {
+				//System.out.println("The queue is empty.");
 				//throw new Exception();
 				return null;
 			}
 			// Get the object at the head of the queue.
-			result = this.head.next.object;
-			this.head = this.head.next; // TODO: Does this work with the sentinel node
+			Node resultNode = this.head.get().next.get();
+			if (resultNode != null) {
+				result = resultNode.object;
+				this.head.get().next = resultNode.next;
+			}
 		}
 		finally {
 			this.deqLock.unlock();

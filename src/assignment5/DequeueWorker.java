@@ -8,7 +8,8 @@ public class DequeueWorker extends AbstractWorker {
 
 	@Override
 	protected void work() {
-		Object item = this.queue.deq();
+		//Object item = this.queue.deq();
+		this.queue.deq();
 	}
 
 }

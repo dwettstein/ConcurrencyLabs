@@ -2,10 +2,12 @@ package assignment5;
 
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class A5 {
 	// default program values:
-	private static int numberOfThreads = 4; 
+	protected static int numberOfThreads = 4;
+	protected static AtomicInteger syncCounter = new AtomicInteger(0);	// A simple barrier to suspend all threads until the last thread has started.
 	public static int listSize = 1000;
 	private static boolean useLock = false;
 	private static int numberOfRuns = 3;
@@ -43,7 +45,7 @@ public class A5 {
 		if (args.length != 0) {
 			numberOfThreads = Integer.decode(args[0]);
 			listSize = Integer.decode(args[1]);
-			if (args[2].matches("useOptimistic")) {
+			if (args[2].matches("useLock")) {
 				useLock = true;
 			}
 			if (args.length >= 4) {
@@ -56,7 +58,7 @@ public class A5 {
 		for (int i = 0; i < numberOfRuns + runsToSkip; i++) {
 			A5 a5 = new A5();
 			
-			System.out.println("Starting program with '" + numberOfThreads + "' threads, listSize '" + listSize + "', updatesPerThread '" + listSize / numberOfThreads + "', useOptimistic '" + useLock + "' and numberOfRuns '" + numberOfRuns + "'.");
+			System.out.println("Starting program with '" + numberOfThreads + "' threads, listSize '" + listSize + "', updatesPerThread '" + listSize / numberOfThreads + "', useLock '" + useLock + "' and numberOfRuns '" + numberOfRuns + "'.");
 			
 			long startTime, endTime;
 			startTime = System.nanoTime();
@@ -81,7 +83,7 @@ public class A5 {
 			}
 		}
 		
-		System.out.printf("Average program duration in ms: '%.3f'. Program options: threads '" + numberOfThreads + "', listSize '" + listSize + "', useOptimistic '" + useLock + "' and numberOfRuns '" + numberOfRuns + "'.\n", (totalTime / numberOfRuns / 1e6));
+		System.out.printf("Average program duration in ms: '%.3f'. Program options: threads '" + numberOfThreads + "', listSize '" + listSize + "', useLock '" + useLock + "' and numberOfRuns '" + numberOfRuns + "'.\n", (totalTime / numberOfRuns / 1e6));
 	}
 	
 	

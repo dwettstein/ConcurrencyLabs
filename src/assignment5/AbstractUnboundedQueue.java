@@ -1,18 +1,17 @@
 package assignment5;
 
+import java.util.concurrent.atomic.AtomicReference;
+
 public abstract class AbstractUnboundedQueue implements IQueue {
 
-	protected Node head;
-	protected Node tail;
-	protected Node headSentinelNode;
-	protected Node tailSentinelNode;
+	protected AtomicReference<Node> head;
+	protected AtomicReference<Node> tail;
+	protected final Node sentinelNode;
 
 	public AbstractUnboundedQueue() {
-		headSentinelNode = new Node(Integer.MIN_VALUE);
-		this.head = headSentinelNode;
-		tailSentinelNode = new Node(Integer.MAX_VALUE);
-		this.tail = tailSentinelNode;
-		this.head.setNextNode(this.tail);
+		sentinelNode = new Node(null);
+		this.head = new AtomicReference<Node>(sentinelNode);
+		this.tail = new AtomicReference<Node>(sentinelNode);
 	}
 
 	public abstract void enq(Object item);
@@ -21,10 +20,10 @@ public abstract class AbstractUnboundedQueue implements IQueue {
 	
 	public String toString() {
 		String result = "";
-		Node currentNode = this.head;
+		Node currentNode = this.head.get();
 		result += currentNode.key;
-		while (currentNode.hasNext()) {
-			currentNode = currentNode.next;
+		while (currentNode != null && currentNode.hasNext()) {
+			currentNode = currentNode.next.get();
 			result += " -> " + currentNode.key;
 		}
 		return result;
@@ -32,10 +31,10 @@ public abstract class AbstractUnboundedQueue implements IQueue {
 
 	@Override
 	public int getSize() {
-		Node currentNode = this.head;
+		Node currentNode = this.head.get();
 		int result = 0;
-		while (currentNode.hasNext()) {
-			currentNode = currentNode.next;
+		while (currentNode != null && currentNode.hasNext()) {
+			currentNode = currentNode.next.get();
 			result++;
 		}
 		result = result - 1; // Subtract one because of sentinel node at the end of the list.

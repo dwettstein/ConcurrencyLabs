@@ -20,6 +20,11 @@ public abstract class AbstractWorker extends Thread {
 	
 	@Override
 	public void run() {
+		A5.syncCounter.addAndGet(1);
+		while (A5.syncCounter.get() < A5.numberOfThreads) {
+			// Wait at this point until all the threads have increment the syncCounter.
+		};		
+		
 		while (true) {
 			int currentUpdates = this.numberOfUpdates.get();
 			if (currentUpdates < this.numbersForWork.length) {

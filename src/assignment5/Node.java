@@ -1,11 +1,12 @@
 package assignment5;
 
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Node {
 	protected Object object;
 	protected int key;
-	protected Node next;
+	protected AtomicReference<Node> next;
 	
 	protected ReentrantLock lock;
 	
@@ -13,15 +14,22 @@ public class Node {
 		this.object = new Object();
 		this.key = key;
 		this.lock = new ReentrantLock();
+		this.next = new AtomicReference<Node>(null);
 	}
 	
 	public Node(Object object) {
 		this.object = object;
-		this.key = object.hashCode();
+		if (object == null) {
+			this.key = Integer.MIN_VALUE;
+		}
+		else {
+			this.key = object.hashCode();
+		}
 		this.lock = new ReentrantLock();
+		this.next = new AtomicReference<Node>(null);
 	}
 	
-	public void setNextNode(Node next) {
+	public void setNextNode(AtomicReference<Node> next) {
 		this.next = next;
 	}
 	
@@ -47,9 +55,5 @@ public class Node {
 	public String toString() {
 		return String.valueOf(this.key);
 	}
-
-	public boolean compareAndSet(Node expected, Node newNode) {
-		// TODO Auto-generated method stub
-		return false;
-	}
+	
 }
