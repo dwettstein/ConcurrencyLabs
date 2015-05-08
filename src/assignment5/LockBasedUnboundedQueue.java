@@ -1,6 +1,5 @@
 package assignment5;
 
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class LockBasedUnboundedQueue extends AbstractUnboundedQueue {
@@ -18,10 +17,15 @@ public class LockBasedUnboundedQueue extends AbstractUnboundedQueue {
 	public void enq(Object value) {
 		this.enqLock.lock();
 		try {
+			Node last = this.tail.get();
+			Node next = last.next.get();
+			
 			Node newNode = new Node(value);
-			AtomicReference<Node> newNodeRef = new AtomicReference<Node>(newNode);
-			this.tail.get().setNextNode(newNodeRef);
-			this.tail = newNodeRef;
+			// INFO:
+			// I'm using also CAS here in order to implement the Node class only once for both queue types.
+			// Usually CAS is not needed here!
+			last.next.compareAndSet(next, newNode); 
+			this.tail.compareAndSet(last, newNode);
 		}
 		finally {
 			this.enqLock.unlock();
@@ -33,18 +37,21 @@ public class LockBasedUnboundedQueue extends AbstractUnboundedQueue {
 		Object result = null;
 		this.deqLock.lock();
 		try {
+			Node first = this.head.get();
+			Node next = first.next.get();
+			
 			// Check if queue is empty.
-			if (this.head.get().next == this.tail) {
+			if (next == null || next.next.get() == null) {
 				//System.out.println("The queue is empty.");
 				//throw new Exception();
 				return null;
 			}
 			// Get the object at the head of the queue.
-			Node resultNode = this.head.get().next.get();
-			if (resultNode != null) {
-				result = resultNode.object;
-				this.head.get().next = resultNode.next;
-			}
+			result = next.object;
+			// INFO:
+			// I'm using also CAS here in order to implement the Node class only once for both queue types.
+			// Usually CAS is not needed here!
+			this.head.compareAndSet(first, next.next.get());
 		}
 		finally {
 			this.deqLock.unlock();

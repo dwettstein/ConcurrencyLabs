@@ -6,12 +6,16 @@ public abstract class AbstractUnboundedQueue implements IQueue {
 
 	protected AtomicReference<Node> head;
 	protected AtomicReference<Node> tail;
-	protected final Node sentinelNode;
+	protected Node sentinelNode;
+	protected AtomicReference<Node> sentinelNodeRef;
 
 	public AbstractUnboundedQueue() {
 		sentinelNode = new Node(null);
-		this.head = new AtomicReference<Node>(sentinelNode);
-		this.tail = new AtomicReference<Node>(sentinelNode);
+		sentinelNodeRef = new AtomicReference<Node>(sentinelNode);
+		this.head = new AtomicReference<Node>(new Node(null));
+		this.tail = new AtomicReference<Node>(new Node(null));
+		this.head.get().setNextNode(sentinelNodeRef);
+		this.tail.get().setNextNode(sentinelNodeRef);
 	}
 
 	public abstract void enq(Object item);
@@ -24,7 +28,7 @@ public abstract class AbstractUnboundedQueue implements IQueue {
 		result += currentNode.key;
 		while (currentNode != null && currentNode.hasNext()) {
 			currentNode = currentNode.next.get();
-			result += " -> " + currentNode.key;
+			result += " -> " + currentNode;
 		}
 		return result;
 	}
@@ -37,7 +41,7 @@ public abstract class AbstractUnboundedQueue implements IQueue {
 			currentNode = currentNode.next.get();
 			result++;
 		}
-		result = result - 1; // Subtract one because of sentinel node at the end of the list.
+//		result = result - 1; // Subtract one because of sentinel node at the end of the list.
 		return result;
 	}
 

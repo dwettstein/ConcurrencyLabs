@@ -1,0 +1,7 @@
+Yes, this algorithm preserve FIFO order. Example for threads A, B, C:
+
+Initial values => tail: 0, items: []
+
+enq A => i: 0, tail: 1, items: [A]
+enq B => i: 1, tail: 2, items: [A, B]
+deq C => range: 2, loop from 0 to range - 1 until an element that is not null has been found => value: A

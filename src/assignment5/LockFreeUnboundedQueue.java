@@ -19,7 +19,7 @@ public class LockFreeUnboundedQueue extends AbstractUnboundedQueue {
 						this.tail.compareAndSet(last, newNode);
 						return;
 					}
-				} 
+				}
 				else {
 					this.tail.compareAndSet(last, next);
 				}
@@ -30,11 +30,11 @@ public class LockFreeUnboundedQueue extends AbstractUnboundedQueue {
 	@Override
 	public Object deq() {
 		while (true) {
-			Node first = this.head.get().next.get(); // The head is always the sentinelNode.
+			Node first = this.head.get();
 			Node last = this.tail.get();
-			Node next = (first == null || first == this.sentinelNode) ? null : first.next.get();
+			Node next = (first == null) ? null : first.next.get();
 			
-			if (first == this.head.get().next.get()) { // The head is always the sentinelNode.
+			if (first == this.head.get()) {
 				if (first == last) {
 					if (next == null) {
 						//System.out.println("The queue is empty.");
@@ -44,9 +44,9 @@ public class LockFreeUnboundedQueue extends AbstractUnboundedQueue {
 					this.tail.compareAndSet(last, next);
 				}
 				else {
-					Object result = (next == null) ? null : next.object;
-					if (this.head.get().next.compareAndSet(first, next)) { // The head is always the sentinelNode.
-						return result;
+					Object value = (next == null) ? null : next.object;
+					if (this.head.compareAndSet(first, next)) {
+						return value;
 					}
 				}
 			}

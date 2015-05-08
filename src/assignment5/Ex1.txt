@@ -1,0 +1,3 @@
+Yes it is necessary to place the check for non-empty queue inside the critical section. 
+Assume the queue has currently 1 item and the check would be done outside the locked section. There are 2 threads trying to dequeue an item simultaneously. 
+Both threads pass the check since the queue is not empty. One of the threads then gets the lock and dequeues the item. After unlocking the other threads gets the lock and also wants to dequeue the item. But since the queue is now empty the queue gets broken, if the thread does not re-check for a non-empty queue.

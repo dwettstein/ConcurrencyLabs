@@ -54,6 +54,7 @@ public class A5 {
 		}
 		
 		long totalTime = 0;
+		int totalItemsLeft = 0;
 		int runsToSkip = 2;
 		for (int i = 0; i < numberOfRuns + runsToSkip; i++) {
 			A5 a5 = new A5();
@@ -75,15 +76,17 @@ public class A5 {
 			
 			long programDuration = endTime - startTime;
 			System.out.println("Program duration (nanotime): '" + programDuration + "', in ms: '" + (programDuration / 1e6) + "'.");
-			System.out.println("Final list (length: " + a5.queue.getSize() + ").");
-			//System.out.println(a5.list.toString());
+			int itemsLeft = a5.queue.getSize();
+			System.out.println("Final list (length: " + itemsLeft + ").");
+			//System.out.println(a5.queue.toString());
 			if (i > runsToSkip - 1) {
 				// Don't use the runsToSkip runs, since they take a lot longer than the other runs.
 				totalTime += programDuration;
+				totalItemsLeft += itemsLeft;
 			}
 		}
 		
-		System.out.printf("Average program duration in ms: '%.3f'. Program options: threads '" + numberOfThreads + "', listSize '" + listSize + "', useLock '" + useLock + "' and numberOfRuns '" + numberOfRuns + "'.\n", (totalTime / numberOfRuns / 1e6));
+		System.out.printf("Average program duration in ms: '%.3f'. Average items left in queue: '" + (totalItemsLeft / numberOfRuns) + "'. Program options: threads '" + numberOfThreads + "', listSize '" + listSize + "', useLock '" + useLock + "' and numberOfRuns '" + numberOfRuns + "'.\n", (totalTime / numberOfRuns / 1e6));
 	}
 	
 	
