@@ -25,7 +25,7 @@ public abstract class AbstractUnboundedQueue implements IQueue {
 	public String toString() {
 		String result = "";
 		Node currentNode = this.head.get();
-		result += currentNode.key;
+		result += currentNode;
 		while (currentNode != null && currentNode.hasNext()) {
 			currentNode = currentNode.next.get();
 			result += " -> " + currentNode;

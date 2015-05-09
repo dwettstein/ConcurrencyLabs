@@ -9,7 +9,10 @@ public class DequeueWorker extends AbstractWorker {
 	@Override
 	protected void work() {
 		this.queue.deq();
-//		Object item = this.queue.deq();
+//		Object item = null;
+//		while (item == null) {
+//			item = this.queue.deq();
+//		}
 //		System.out.println("Removed item " + item);
 //		System.out.println(this.queue.toString());
 	}

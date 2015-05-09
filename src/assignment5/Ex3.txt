@@ -2,19 +2,22 @@ Machine Specs:
 Sunfire machine
 Java: 1.6.0_10
 
-Updates per thread: 100'000 integers divided by number of threads.
+Updates per thread: 100'000 integers divided by number of threads. Thread execution is synchronized with a simple barrier.
 First value: average duration of 3 runs in ms (skipped first run for getting better results)
-Second value: average items left in the queue
+Second value: average items left in the queue (since the dequeuer threads are faster)
 
 LockBasedUnboundedQueue:
 ========================================================================================
-Number of threads:		2				4				8
-						10378.723 ms	5241.797 ms 	2873.506 ms
+Number of threads:		2					4					8
+						58.591 ms, 30817	80.110 ms, 36492	83.923 ms, 25937
 
 LockFreeUnboundedQueue:
 ========================================================================================
-Number of threads:		2				4				8
-						5159.128 ms		2662.216 ms		2060.416 ms
-
+Number of threads:		2					4					8
+						52.081 ms, 32666	32.781 ms, 18804	20.748 ms, 16780
 
 Interpretation:
+The reason why there are still items left in the queue is because we don't re-try to dequeue an item if the queue was empty (item was null). For example two threads (one enqueuer and one dequeuer) and 100'000 updates (50'000 each) the result can be interpreted as followed. If there were 30'817 items left in the queue finally, the dequeuer thread has dequeued only 19'183 items successfully. For the other 30'817 attempts the queue was empty.
+From this we can conclude that the execution of a dequeue is faster than an enqueue. 
+
+As expected the lock-free version of the unbounded queue is much faster then the one based on locking. Especially for higher amount of threads this can be observed. Another interesting point is that the average items left in the queue is decreasing with higher amount of threads.
